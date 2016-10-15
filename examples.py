@@ -12,5 +12,6 @@ putative_aligned_AI = ALBA(Human, 20)
 from alba import memoizer_ALBA
 A = memoizer_ALBA(Human, 1)
 
-response, A = A.act("your output will be printed")
-print(response)
+if __name__ == "__main__":
+    response, A = A.act("your output will be printed")
+    print(response)
