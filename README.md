@@ -25,19 +25,23 @@ while True:
   message2, A2 = A2.act(message1)
   message1, A1 = A1.act(message2)
 ``` 
+
+The project is largely organized as a calculus of agents, supplying methods like amplify(A) that turn
+one agent into another agent.
  
 ## what's in the box
 
-* ALBA(H, n) returns a new agent which is aligned with H but much smarter,
-roughly as defined [here](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf)
-* Human() is the agent implemented by the user sitting at their computer.
-* HCH(A) roughly implements [strong HCH](https://medium.com/ai-control/strong-hch-bedb0dc08d4e)
-* Meta(H) roughly implements [annotated functional programming]
-(https://medium.com/ai-control/approval-directed-algorithm-learning-bf1f8fad42cd), 
-though this runs together with HCH.
 * capabilities.py defines stand-ins for powerful AI capabilities:
 IntrinsicRL, Imitator, [HybridLearner](https://medium.com/ai-control/imitation-rl-613d70146409),
 [TransparentRL](https://medium.com/ai-control/the-informed-oversight-problem-1b51b4f66b35),
 and TransparentHybrid.
-* Memoizer(A) is a very simple "learning" algorithm that tries to memorize what A does,
+* alba.ALBA(H, n) returns a new agent which is aligned with H but much smarter,
+roughly as defined [here](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf). It won't actually work unless you replace capabilities.TransparentHybrid with an actual algorithm for [imitation+RL](https://medium.com/ai-control/imitation-rl-613d70146409).
+* agent.Human() is the agent implemented by the user sitting at their computer.
+* amplify.HCH(A) roughly implements [strong HCH](https://medium.com/ai-control/strong-hch-bedb0dc08d4e)
+* amplify.Meta(H) roughly implements [annotated functional programming]
+(https://medium.com/ai-control/approval-directed-algorithm-learning-bf1f8fad42cd), 
+though this runs together with HCH.
+* memoizer.Memoizer(A) is a very simple "learning" algorithm that tries to memorize what A does,
 and asks A whenever it encounters a novel situation.
+* alba.memoizer_ALBA(H, n) is like ALBA, but defined using memoizer.Memoizer instead of a real learning algorithm.
