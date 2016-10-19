@@ -3,10 +3,10 @@ ALBA is a candidate scheme for training an aligned reinforcement learner, as ori
 in [this post](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf).
 A more recent blog post is [here](https://medium.com/@paulfchristiano/5636ef510907).
 
-For now the system is theoretical; the point of writing it as code (and running it with mocked up
-AI capabilities) is to force ourselves to be extremely concrete about exactly how the proposed system
-would work. Over the medium term this implementation will hopefully become practical enough to run,
-and we can start to see what works and doesn't work.
+For now the system is theoretical; the point of writing this code (and running it with mocked up
+AI capabilities) is to be very concrete/precise about exactly how the proposed system
+would work. Over the medium or long term we might have an implementation that is practical enough to run,
+and then we could learn something about what works and what doesn't.
 
 For now the system has a number of deal-breaking problems (see the TODO and FIXME's in alba.py),
 such that it definitely wouldn't be aligned if you used it with powerful AI.
