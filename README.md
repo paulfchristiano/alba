@@ -1,6 +1,7 @@
 # alba
 ALBA is a candidate scheme for training an aligned reinforcement learner, as originally outlined
 in [this post](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf).
+A more recent blog post is [here](https://medium.com/@paulfchristiano/5636ef510907).
 
 For now the system is theoretical; the point of writing it as code (and running it with mocked up
 AI capabilities) is to force ourselves to be extremely concrete about exactly how the proposed system
@@ -13,8 +14,7 @@ Over the long term these issues will either get addressed,
 or it will become clear that ALBA is unworkable.
 
 The implementation of HCH is very similar to the interpreter I wrote
-[here](https://github.com/paulfchristiano/dwimmer).
-I didn't reuse any code from that project, but it was pretty easy to rewrite quickly.
+[here](https://github.com/paulfchristiano/dwimmer), though I didn't reuse any code from that project.
 
 ## requirements
 
