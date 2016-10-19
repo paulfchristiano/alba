@@ -15,13 +15,15 @@ over the long term those will either get addressed or it will become clear that 
 The best place to start is to look in examples.py.
 
 Agents have the single method act(observation) which returns an action and a new Agent.
-To simulate an interaction you would run something like:
+To simulate a conversation between A and B you would run something like:
 
 ```
-observation, environment = new_environment()
+A1 = Agent1()
+A2 = Agent2()
+message1, A1 = A1.act("start off the conversation")
 while True:
-  action, agent = agent.act(observation)
-  observation, environment = environment.step(action)
+  message2, A2 = A2.act(message1)
+  message1, A1 = A1.act(message2)
 ``` 
  
 ## what's in the box
