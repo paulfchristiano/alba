@@ -8,7 +8,26 @@ would work. Over the medium term this implementation will hopefully become pract
 and we can start to see what works and doesn't work.
 
 For now the system has a number of deal-breaking problems (see the TODO and FIXME's in alba.py),
-over the long term those will either get addressed or it will become clear that the scheme is unworkable.
+such that it definitely wouldn't be aligned if you used it with powerful AI.
+Over the long term these issues will either get addressed,
+or it will become clear that ALBA is unworkable.
+
+The implementation of HCH is very similar to the interpreter I wrote
+[here](https://github.com/paulfchristiano/dwimmer).
+I didn't reuse any code from that project, but it was pretty easy to rewrite quickly.
+
+## requirements
+
+You'll need a few packages:
+```
+pip install pymongo
+pip install pyparsing
+pip install six
+```
+
+If you want to use memoizer_ALBA (which is basically the only thing that you can actually run),
+then you need to have a mongo server running locally. This is pretty easy to set up,
+but also there really isn't that much to see.
 
 ## usage
 
@@ -26,8 +45,8 @@ while True:
   message1, A1 = A1.act(message2)
 ``` 
 
-The project is largely organized as a calculus of agents, supplying methods like amplify(A) that turn
-one agent into another agent.
+The project is largely organized as a calculus of agents;
+methods like amplify.HCH(A) or capabilities.Imitator(A) turn one agent into another agent.
  
 ## what's in the box
 
@@ -42,6 +61,43 @@ roughly as defined [here](https://medium.com/ai-control/alba-an-explicit-proposa
 * amplify.Meta(H) roughly implements [annotated functional programming]
 (https://medium.com/ai-control/approval-directed-algorithm-learning-bf1f8fad42cd), 
 though this runs together with HCH.
+* amplify.amplify(A) is an implementation of [capability amplification](https://medium.com/ai-control/policy-amplification-6a70cbee4f34) that turns A into a more powerful (but slower) agent. The current implemenation is just Meta(HCH(A)).
 * memoizer.Memoizer(A) is a very simple "learning" algorithm that tries to memorize what A does,
 and asks A whenever it encounters a novel situation.
-* alba.memoizer_ALBA(H, n) is like ALBA, but defined using memoizer.Memoizer instead of a real learning algorithm.
+* alba.memoizer_ALBA(H, n) is like ALBA, but defined using memoizer.Memoizer instead of a real learning algorithm. This one will actually work, but good luck getting it to do anything.
+
+## using HCH
+
+If you run alba.memoizer_ALBA(H, n) you will be presented with a message asking you what to do.
+You can type commands, and those commands will get executed.
+This is the machinery in the definition of HCH,
+and it works roughly as described in [the post](https://medium.com/ai-control/strong-hch-bedb0dc08d4e#.6s6wcmyqu).
+
+You operate in an environment, which consists of a sequence of messages.
+Each message consists of text interleaved with:
+
+* Pointers like `#5` to messages
+* Pointers like `@2` to agents
+
+You can compose a message by writing text interspersed with `#n` or `@n`.
+You can also insert submessages using `(...)`; for example you could write `the pair with first element (the city of Paris) and second element (the country France)`.
+You can't write numbers. It's very easy to accidentally type `n` instead of `#n` or `@n`, I know the UI could use improvement.
+But like I said above, there isn't much to see.
+
+You can interact with this environment by typing commands.
+The available commands are:
+
+* `view #n` for an integer n: `view #3` will show you the message pointed to by `#3`. You are guaranteed that at most one pointer in the environment will be rendered as `#3`, so this is always unambiguous.
+* `ask Q` for a message Q: `ask what is #1 plus #2?` will create a new agent, start it off with the message `what is #1 plus #2?` run it until it replies, and then returns whatever it replied. Here `#1` and `#2` would be pointers to messages, which the agent could view using the `view` command. They might have different names in the new agent's environment.
+* `reply A` for a message A: `reply the answer is #4` will return `the answer is #4` as your reply to whichever agent initiated the current interaction by using `ask` or `ask@`.
+* `ask@n Q` for an integer n and message Q: `ask@1 what do you mean?` will send the message `what do you mean?` to the agent pointed to by `@1`, run that agent until it replies, and then return whatever it replies.
+* `reflect`: returns a pointer to the agent which calls reflect. These pointers can be inserted into a message, e.g. if you were asked `who are you?` you could call `reflect`, receive the reply `you are @1`, and then run `reply I am @1`.
+
+When you receive a message or reply, it will begin with `@n:...`.
+You can use the pointer `@n` to address queries to the agent who sent that message.
+Remember that everything is immutable. If I send a message `Q` to agent `@7`,
+the reply will come from a new agent `@8`.
+If I send another message `Q2` to `@7`, it will have no memory of having just answered `Q`.
+If I want to continue the discussion, I need to address the next message to `@8`.
+
+If you don't like what the system has memorized and want to start over, you can run `mongo` and then at the shell type `db.memoizer.remove({})` and that will destroy everything.
