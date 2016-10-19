@@ -2,17 +2,20 @@
 ALBA is a candidate scheme for training an aligned reinforcement learner, as originally outlined
 in [this post](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf).
 
-For now the system is entirely theoretical; the point of writing it as code (and running with mocked up
+For now the system is theoretical; the point of writing it as code (and running it with mocked up
 AI capabilities) is to force ourselves to be extremely concrete about exactly how the proposed system
 would work. Over the medium term this implementation will hopefully become practical enough to run,
 and we can start to see what works and doesn't work.
 
+For now the system has a number of deal-breaking problems (see the TODO and FIXME's in alba.py),
+over the long term those will either get addressed or it will become clear that the scheme is unworkable.
+
 ## usage
 
-Best place to start is to look in examples.py.
+The best place to start is to look in examples.py.
 
-Agents have the single method act(observation) which return an action and a new Agent.
-To simulate an interaction you would run something like.
+Agents have the single method act(observation) which returns an action and a new Agent.
+To simulate an interaction you would run something like:
 
 ```
 observation, environment = new_environment()
@@ -21,7 +24,7 @@ while True:
   observation, environment = environment.step(action)
 ``` 
  
-## what's defined
+## what's in the box
 
 * ALBA(H, n) returns a new agent which is aligned with H but much smarter,
 roughly as defined [here](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf)
