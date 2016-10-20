@@ -8,14 +8,7 @@ class Agent(object):
         """
         returns (action, state of Agent after computing action)
         """
-        raise NotImplementedError
-
-    def done(self):
-        """
-        if this is a learning agent,
-        calling done() may trigger additional updates to the agent's
-        """
-        pass
+        raise NotImplementedError("Agents must define act")
 
     @property
     def state_free(self):

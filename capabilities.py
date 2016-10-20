@@ -8,7 +8,7 @@ To build an actual AI system, replace these stubs with real implementations.
 
 class Imitator(Agent):
 
-    def __init__(self, expert):
+    def __init__(self, expert, **kwargs):
         """
         expert: an Agent implementing the policy-to-be-imitated
 
@@ -21,20 +21,15 @@ class Imitator(Agent):
         but calling methods on an Imitator may cause updates to external parameters,
         and these parameters may affect the behavior of existing Agent objects
         """
+        super(Imitator, self).__init__(**kwargs)
         self.expert = expert
 
-    def act(self, obs):
-        #this method is responsible for sometimes calling expert.act() to gather training data
-        raise NotImplementedError
-
-    def done(self):
-        #this method actually updates the agent's parameters if it gathered training data
-        #the agent might also update on episodes where it doesn't gather training data
-        raise NotImplementedError
+    #the act method is responsible for sometimes calling expert.act() to gather training data
+    #it is also responsible for updating the agent's parameters
 
 class IntrinsicRL(Agent):
 
-    def __init__(self, reward):
+    def __init__(self, reward, **kwargs):
         """
         reward: a function that acts on a pair of observation and action sequences,
         and returns a reward in [0, 1]
@@ -49,75 +44,111 @@ class IntrinsicRL(Agent):
         but calling methods on an RL agent may cause updates to external parameters,
         and these parameters may affect the behavior of existing Agent objects
         """
+        super(IntrinsicRL, self).__init__(**kwargs)
         self.reward = reward
 
-    def act(self, obs):
-        raise NotImplementedError
+    #the act method is responsible for sometimes calling reward() to gather training data,
+    #and for updating the agent's parameters
 
-    def done(self):
-        #this method is responsible for sometimes calling reward() to gather training data,
-        #and for updating teh agent's parameters
-        raise NotImplementedError
-
-class HybridLearner(Agent):
+class HybridLearner(Imitator, IntrinsicRL):
     """
     Combines Imitator and IntrinsicRL
     """
+    pass
 
-    def __init__(self, expert, reward):
-        """
-        Will call expert.act() and reward() a sublinear number of times,
-        and aims to get a reward as high as the expert.
-        """
-        self.expert = expert
-        self.reward = reward
-
-    def act(self, obs):
-        raise NotImplementedError
-
-    def done(self):
-        raise NotImplementedError
-
-class TransparentRL(Agent):
+class TransparentRL(IntrinsicRL):
     """
     Extends IntrinsicRL by having the agent supply auxiliary data to the reward function
     """
 
-    def __init__(self, rewards):
+    def __init__(self, info_reward, **kwargs):
         """
-        rewards: takes as input a sequence of observations, actions, and auxiliary information, and
-        returns two numbers, action_reward and info_reward
+        info_reward: takes as input a sequence of observations, actions, and auxiliary information,
+        returns a reward that measures the quality of the auxiliary information.
 
-        info_reward is an evaluation of the auxiliary information to evaluating the sequence of actions
-        action_reward is an evaluation of the agent's behavior, in light of the auxiliary information
+        the agent prooduces auxiliary info that approximately maximize info_reward, taking the actions as given
 
-        the auxiliary_information will approximately maximize info_reward, taking the actions as given
-        while the actions will approximately maximize the reward (as for an IntirinsicRL agent), taking the info as given
+        this info will be supplied as an additional argument to the reward function;
+        the actions will approximately maximize the reward function, taking the actions as given
         """
-        self.rewards = reward
+        super(TransparentRL, self).__init__(**kwargs)
+        self.info_reward = info_reward
 
-    def act(self, obs):
-        raise NotImplementedError
+    #the act method sometimes collects supervised training data
+    #to do so it computes the auxiliary information (using the internal state of the agent),
+    #provides this information to reward(),
+    #and then updates the models which generate the actions and the auxiliary information
 
-    def done(self):
-        #this method sometimes collects supervised training data
-        #to do so it computes the auxiliary information (using the internal state of the agent),
-        #provides this information to reward(),
-        #and then updates the models which generate the actions and the auxiliary information
-        raise NotImplementedError
+class ComparisonRL(IntrinsicRL):
 
-class TransparentHybrid(Agent):
+    def __init__(self, **kwargs):
+        """
+        the reward function should now take a pair of (observation, action) tuples, and return value in [-1, 1].
+        Negative values correspond to the first option having higher reward,
+        while positive values correspond to the second value having higher reward.
+        The reward should be antisymmetric.
+
+        The agent's goal can be understood as playing a two-player game against itself:
+        the agent's trajectories optimize its relative reward against the agent's distribution over trajectories,
+        holding that distribution fixed---i.e, the agent should converge to the minimax strategy
+        in this zero-sum game played against itself
+        """
+        super(ComparisonRL, self).__init__(**kwargs)
+
+    def act(self, obs, environment, **kwargs):
+        """
+        environment: an Agent implementing the environment with which this agent is currently interacting
+
+        the environment may be used to simulate additional rollouts during training
+        
+        the environment should return None when the interaction is over
+        """
+        return super(TransparentComparisonRL, self).act(obs, **kwargs)
+
+class TransparentComparisonRL(ComparisonRL, TransparentRL):
     """
-    Combines TransparentRL with Imitator, analogous to HybridLearner
+    Combines TransparentRL and ComparisonRL
+
+    info_reward should now take as input a sequence of observations, sequence of actions,
+    and a pair of candidate pieces of auxiliary information.
+
+    The auxiliary information will be optimized in the same way as for ComparisonRL
+
+    The auxiliary information will be supplied to the reward function,
+    which should now operate on a pair of tuples of (observations, actions, info).
     """
+    pass
 
-    def __init__(self, expert, rewards):
-        self.expert = expert
-        self.rewards = rewards
+class ThrottledAgent(Agent):
 
-    def act(self, obs):
-        raise NotImplementedError
+    def __init__(self, capability, **kwargs):
+        """
+        capability: an integer representing the capability of the agent,
+        which might control the model complexity, computational complexity, or training time
 
-    def done(self):
-        raise NotImplementedError
+        We promise that agents with capability 0 are strictly weaker than a huamn,
+        and that agents with capability n+1 are strictly weaker than amplify.amplify(A)
+        for an agent of capability n.
+        """
+        self.capability = capability
+        super(ThrottledAgent, self).__init__(**kwargs)
 
+class PowerfulAgent(ThrottledAgent, TransparentComparisonRL, Imitator):
+    """
+    This is our model of a powerful learning system.
+    It differs from a `generic' RL system in a few respects:
+
+    * It can learn from any combination of imitation and reinforcement
+    * Its reward function compares pairs of trajectories rather than evaluating individual trajectories
+    * Its capability is explicitly controlled the capability= argument to the constructor
+    * Its reward function is given auxiliary information which is
+    produced by the agent to optimize a special info_reward function
+    """
+    pass
+
+class SecondBestAgent(ThrottledAgent, TransparentRL, Imitator):
+    """
+    Like PowerfulAgent, but doesn't use comparisons.
+    Will replace with PowerfulAgent once HCH is rewritten in continuation-passing style.
+    """
+    pass
