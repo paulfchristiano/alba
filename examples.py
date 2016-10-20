@@ -18,4 +18,4 @@ hch = Meta(HCH(Human))
 
 #if you want to see how the ensembling works, you can run council.act()
 from amplify.reliability import Ensemble
-council = Ensemble((Human, Human))
+ensemble = Ensemble((Human, Human))
