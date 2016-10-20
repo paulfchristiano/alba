@@ -42,6 +42,9 @@ class MongoCache(object):
     def save(self, key, value):
         self.collection.update_one({"key":key}, {"$set":{"value":value}}, upsert=True)
 
+#TODO generalize Memoizer to handle arbitrary Agents with serializable state,
+#implement agent hashing so that this is computationally efficient
+
 class Memoizer(Agent):
 
     def __init__(self, agent, cache=None, transcript=(), transcript_hash=None):

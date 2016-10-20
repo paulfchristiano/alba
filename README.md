@@ -25,9 +25,9 @@ pip install pyparsing
 pip install six
 ```
 
-If you want to use memoizer_ALBA (which is basically the only thing that you can actually run),
+If you want to use memoizer_ALBA
 then you need to have a mongo server running locally. This is pretty easy to set up,
-but also there really isn't that much to see.
+but there isn't that much to see.
 
 ## usage
 
@@ -47,6 +47,9 @@ while True:
 
 The project is largely organized as a calculus of agents;
 methods like amplify.HCH(A) or capabilities.Imitator(A) turn one agent into another agent.
+
+If you want to get a sense for what the algorithm looks like from inside,
+you can run examples.py and then try hch.act("this is a test") or council.act("this is a test").
  
 ## what's in the box
 

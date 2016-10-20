@@ -31,7 +31,11 @@ def stateless_meta_policy(agent):
     def policy(observations, actions):
         observationsm = encode_list([encode_str(obs) for obs in observations])
         actionsm = encode_list([encode_str(act) for act in actions])
-        query = Message("how should an agent who has observed [] respond to the last action, given that their past responses have been []?", observationsm, actionsm)
+        message = (
+            "what should an agent do after observing the sequence of observations [], "
+            "given that their past responses have been []?"
+        )
+        query = Message(message, observationsm, actionsm)
         actionm, _ = agent.act(query)
         return decode_str(actionm, agent)
     return policy

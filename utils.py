@@ -22,6 +22,6 @@ def clear_screen():
 
 def elicit_input(observations, actions):
     clear_screen()
-    lines = interleave([obs + "\n" for obs in observations], actions)
-    print("\n".join(lines))
-    return raw_input()
+    lines = interleave(observations, [">>> {}".format(action) for action in actions])
+    print("\n\n".join(lines))
+    return raw_input("\n>>> ")

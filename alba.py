@@ -1,9 +1,8 @@
 from capabilities import Imitator, IntrinsicRL, HybridLearner, TransparentHybrid
-from amplify import HCH
-from amplify.meta import Meta, StatelessMeta
+from amplify import amplify, stateless_amplify
 from memoizer import Memoizer
 
-def make_ALBA(distill, amplify=lambda A, H : Meta(HCH(A))):
+def make_ALBA(distill, amplify=lambda A, H : amplify(A)):
     """
     distill: takes as input an expensive agent,
     uses it to train a cheap learning agent
@@ -23,24 +22,28 @@ ALBA = make_ALBA(lambda overseer : TransparentHybrid(overseer, make_reward(overs
 
 #FIXME: Prevent catastrophic failure on adversarial inputs. Adversarial training?
 #FIXME: Ensure RL agent cannot outsmart overseer. Gradually scale up capacity as a function of n?
-#FIXME: Prevent failure probability from growing with each iteration. Amplify reliability as well as capability?
 #FIXME: Allow Amplify(A) to learn from training data, so it can keep up with the RL agent it is overseeing
 #FIXME: Scores in [0, 1] are arbitrary, use comparisons between different actions instead
 #FIXME: Use budgeted HCH so that errors can't result in hangs
 
+#TODO: Figure out whether A -> Ensemble((A, A, A)) actually amplifies reliability
 #TODO: Figure out whether iterating A -> Meta(HCH(A)) can really get us to arbitrarily powerful agents
 
 #---simple examples
 
+#Rather than using imitation+RL, we can of course use imitation or RL
 imitation_ALBA = make_ALBA(lambda overseer : Imitator(overseer))
-rl_ALBA = make_ALBA(lambda overseer : IntrinsicRL(make_reward(overseer)))
-hybrid_ALBA = make_ALBA(lambda overseer : HybridLearner(overseer, make_reward(overseer)))
+rl_ALBA = make_ALBA(lambda overseer : TransparentRL(make_reward(overseer)))
 
-#This isn't a serious algorithm, but it's useful for messing around and testing
+#We also don't absolutely need transparency,
+#though without it oversight may not work as intended
+opaque_ALBA = make_ALBA(lambda overseer : HybridLearner(overseer, make_reward(overseer)))
+
+#This isn't a serious algorithm, but it's useful for messing around and testing.
 #Rather than imitating in an intelligent way, it just copies what it has seen done before,
 #and defers to the overseer whenever it encounters a novel situation.
 #NOTE: memoizer_alba requires a stateless agent, so that memoization can work correctly
-memoizer_ALBA = make_ALBA(Memoizer, lambda A, H : StatelessMeta(HCH(A)))
+memoizer_ALBA = make_ALBA(Memoizer, lambda A, H : stateless_amplify(A))
 
 #---reward functions
 

@@ -10,8 +10,12 @@ putative_aligned_AI = ALBA(Human, 20)
 #(the memoization mechanism also prevents the overseer from maintaining state)
 #to run it you will need to have a mongo server running locally
 from alba import memoizer_ALBA
-A = memoizer_ALBA(Human, 1)
+mocked_up_AI = memoizer_ALBA(Human, 1)
 
-if __name__ == "__main__":
-    response, A = A.act("your output will be printed")
-    print(response)
+#if you want to see how HCH works, you can run hch.act()
+from amplify import Meta, HCH
+hch = Meta(HCH(Human))
+
+#if you want to see how the ensembling works, you can run council.act()
+from amplify.reliability import Ensemble
+council = Ensemble((Human, Human))
