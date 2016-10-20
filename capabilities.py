@@ -81,29 +81,18 @@ class TransparentRL(IntrinsicRL):
 
 class ComparisonRL(IntrinsicRL):
 
-    def __init__(self, **kwargs):
-        """
-        the reward function should now take a pair of (observation, action) tuples, and return value in [-1, 1].
-        Negative values correspond to the first option having higher reward,
-        while positive values correspond to the second value having higher reward.
-        The reward should be antisymmetric.
+    """
+    The reward function should now take a pair of (observation, action) tuples, and return value in [-1, 1].
+    Negative values correspond to the first option having higher reward,
+    while positive values correspond to the second value having higher reward.
+    The reward should be antisymmetric.
 
-        The agent's goal can be understood as playing a two-player game against itself:
-        the agent's trajectories optimize its relative reward against the agent's distribution over trajectories,
-        holding that distribution fixed---i.e, the agent should converge to the minimax strategy
-        in this zero-sum game played against itself
-        """
-        super(ComparisonRL, self).__init__(**kwargs)
-
-    def act(self, obs, environment, **kwargs):
-        """
-        environment: an Agent implementing the environment with which this agent is currently interacting
-
-        the environment may be used to simulate additional rollouts during training
-        
-        the environment should return None when the interaction is over
-        """
-        return super(TransparentComparisonRL, self).act(obs, **kwargs)
+    The agent's goal can be understood as playing a two-player game against itself:
+    the agent's trajectories optimize its relative reward against the agent's distribution over trajectories,
+    holding that distribution fixed---i.e, the agent should converge to the minimax strategy
+    in this zero-sum game played against itself
+    """
+    pass
 
 class TransparentComparisonRL(ComparisonRL, TransparentRL):
     """
@@ -143,12 +132,5 @@ class PowerfulAgent(ThrottledAgent, TransparentComparisonRL, Imitator):
     * Its capability is explicitly controlled the capability= argument to the constructor
     * Its reward function is given auxiliary information which is
     produced by the agent to optimize a special info_reward function
-    """
-    pass
-
-class SecondBestAgent(ThrottledAgent, TransparentRL, Imitator):
-    """
-    Like PowerfulAgent, but doesn't use comparisons.
-    Will replace with PowerfulAgent once HCH is rewritten in continuation-passing style.
     """
     pass
