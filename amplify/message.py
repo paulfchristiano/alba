@@ -1,5 +1,4 @@
 from utils import areinstances, interleave, unweave
-from agent import Agent
 import six
 
 class Referent(object):
@@ -69,8 +68,11 @@ class Channel(Referent):
     symbol = "@"
 
     def __init__(self, agent):
-        assert isinstance(agent, Agent)
         self.agent = agent
+        assert self.well_formed()
+
+    def well_formed(self):
+        return hasattr(self.agent, 'act')
 
     def instantiate(self, xs):
         raise Exception("should not try to instantiate a channel")

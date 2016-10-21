@@ -2,11 +2,9 @@ from capabilities import PowerfulAgent
 from amplify import amplify, stateless_amplify
 from memoizer import Memoizer
 
-#TODO: Implement PowerfulAgent: semi-supervised RL+imitation with comparisons
-
 #FIXME: Prevent catastrophic failure on adversarial inputs. Adversarial training?
-#FIXME: Use budgeted HCH so that errors can't result in hangs.
 
+#TODO: Implement PowerfulAgent: semi-supervised RL+imitation with comparisons
 #TODO: Implement throttling so that A -> Meta(HCH(A)) gets us from capability=n to n+1,
 #and determine whether this is actually compatible with having capability increase unboundedly
 #TODO: Implement effective transparency for PowerfulAgent,

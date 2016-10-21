@@ -45,3 +45,35 @@ class StatelessAgent(Agent):
         return StatelessAgent(self.policy, observations, actions)
 
 Human = StatelessAgent(elicit_input)
+
+class BudgetedAgent(object):
+    """
+    Like an Agent, but tracks resource constraints.
+    """
+
+    def act(self, obs, budget):
+        """
+        returns (action, state of Agent after computing action, remaining budget)
+    
+        The method tracks some kind of resources; it should only use resources in budget,
+        and it should return any unused resources.
+        """
+        raise NotImplementedError("BudgetedAgents must define act")
+
+class Budgeter(Agent):
+    """
+    Turns a BudgetedAgent into an Agent by specifying what its per-step budget should be.
+    """
+
+    def __init__(self, A, budget):
+        self.A = A
+        self.budget = budget
+        
+    def well_formed(self):
+        return (
+            isinstance(self.A, BudgetedAgent)
+        )
+
+    def act(self, obs):
+        action, A, _ = self.A.act(obs, self.budget)
+        return Budgeter(A, self.budget)

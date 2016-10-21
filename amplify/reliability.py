@@ -63,5 +63,5 @@ class Ensemble(Agent):
         message = "{}\n\n{}".format(vote_query, summary)
         votes, agents = unzip(agent.act(message) for agent in agents)
         pick = run_election(votes)
-        _, agents = unzip(agent.act("action {} won".format(pick)) for agent in agents)
+        _, agents = unzip(agent.act("action {} won (just say 'OK')".format(pick)) for agent in agents)
         return actions[pick], Ensemble(agents)
