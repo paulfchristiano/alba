@@ -28,18 +28,29 @@ def hash_empty():
 class MongoCache(object):
 
     def __init__(self, name="memoizer"):
-        self.db = pymongo.MongoClient().cache
-        if name not in self.db.collection_names():
-            self.db.create_collection(name)
-        self.collection = self.db[name]
+        self.name = name
+        self.connected = False
+
+    def connect(self):
+        if not self.connected:
+            try:
+                self.db = pymongo.MongoClient(serverSelectionTimeoutMS=1000).cache
+                if self.name not in self.db.collection_names():
+                    self.db.create_collection(self.name)
+            except pymongo.errors.ServerSelectionTimeoutError:
+                raise Exception("To use a Memoizer, you need a Mongo server running locally.")
+            self.collection = self.db[self.name]
+            self.connected = True
 
     def lookup(self, key):
+        self.connect()
         resp = self.collection.find_one({"key":key})
         if resp is None or "value" not in resp:
             return None
         return resp["value"]
 
     def save(self, key, value):
+        self.connect()
         self.collection.update_one({"key":key}, {"$set":{"value":value}}, upsert=True)
 
 #TODO generalize Memoizer to handle arbitrary Agents with serializable state,
