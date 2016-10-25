@@ -49,7 +49,7 @@ The project is largely organized as a calculus of agents;
 methods like amplify.HCH(A) or capabilities.Imitator(A) turn one agent into another agent.
 
 If you want to get a sense for what the algorithm looks like from inside,
-you can run examples.py and then try hch.act("this is a test") or ensemble.act("this is a test").
+you can run examples.py and then try meta.act("this is a test") or ensemble.act("this is a test").
  
 ## what's in the box
 

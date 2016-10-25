@@ -14,7 +14,7 @@ mocked_up_AI = memoizer_ALBA(Human, 1)
 
 #if you want to see how HCH works, you can run hch.act()
 from amplify import Meta, HCH
-hch = Meta(HCH(Human))
+meta = Meta(HCH(Human))
 
 #if you want to see how the ensembling works, you can run council.act()
 from amplify.reliability import Ensemble
