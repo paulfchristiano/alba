@@ -16,7 +16,7 @@ class Meta(Agent):
     def act(self, obs):
         obsm = encode_str(obs)
         agent = self.agent
-        query = Message("how should an agent in state [] respond to observing []?", self.state, obsm)
+        query = Message("what string should be returned by an agent in state [] who observes []?", self.state, obsm)
         actionm, agent = agent.act(query)
         state, agent = agent.act(Message("what should the agent's state be after responding?"))
         return decode_str(actionm, self.agent), Meta(self.agent, state)
@@ -32,7 +32,7 @@ def stateless_meta_policy(agent):
         observationsm = encode_list([encode_str(obs) for obs in observations])
         actionsm = encode_list([encode_str(act) for act in actions])
         message = (
-            "what should an agent do after observing the sequence of observations [], "
+            "what string should an agent output after observing the sequence of observations [], "
             "given that their past responses have been []?"
         )
         query = Message(message, observationsm, actionsm)
@@ -81,7 +81,7 @@ def encode_list(x):
 
 def decode_int(x, H):
     agent = H
-    signm, agent = agent.act(Message("is [] negative, zero, or positive? (respond verbatim)"))
+    signm, agent = agent.act(Message("is [] negative, zero, or positive? (respond verbatim)", x))
     if signm == Message("negative"):
         sign = -1
         x = -x

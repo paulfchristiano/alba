@@ -79,4 +79,4 @@ class Budgeter(Agent):
 
     def act(self, obs):
         action, A, _ = self.A.act(obs, self.budget)
-        return Budgeter(A, self.budget)
+        return action, Budgeter(A, self.budget)
