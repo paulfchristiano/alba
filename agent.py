@@ -22,6 +22,9 @@ class Agent(object):
         """
         return hasattr(self, 'set')
 
+    def __call__(self, obs):
+        return self.act(obs)
+
 class StatelessAgent(Agent):
 
     def __init__(self, policy, observations=(), actions=()):
