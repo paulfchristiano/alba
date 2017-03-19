@@ -60,8 +60,7 @@ and TransparentHybrid.
 * alba.ALBA(H, n) returns a new agent which is aligned with H but much smarter,
 roughly as defined [here](https://medium.com/ai-control/alba-an-explicit-proposal-for-aligned-ai-17a55f60bbcf). It won't actually work unless you replace capabilities.TransparentHybrid with an actual algorithm for [imitation+RL](https://medium.com/ai-control/imitation-rl-613d70146409). Its inputs and outputs are strings.
 * agent.Human() is the agent implemented by the user sitting at their computer. Its inputs and outputs are strings.
-* amplify.HCH(A) roughly implements [annotated functional programming]
-(https://medium.com/ai-control/approval-directed-algorithm-learning-bf1f8fad42cd). Its inputs and outputs are Messages.
+* amplify.HCH(A) roughly implements [annotated functional programming](https://medium.com/ai-control/approval-directed-algorithm-learning-bf1f8fad42cd). Its inputs and outputs are Messages.
 * amplify.amplify(A) is an implementation of [capability amplification](https://medium.com/ai-control/policy-amplification-6a70cbee4f34) that turns A into a more powerful (but slower) agent. The current implemenation is just Meta(HCH(A)).
 * memoizer.Memoizer(A) is a very simple "learning" algorithm that tries to memorize what A does,
 and asks A whenever it encounters a novel situation.
