@@ -51,7 +51,6 @@ def str_to_reward(s):
 def make_transcript(observations, actions):
     lines = interleave(
             [str(obs) for obs in observations],
-            Fix minor typo in alba.py
             ["{}\n".format(act) for act in actions]
         )
     return "\n".join(lines)
