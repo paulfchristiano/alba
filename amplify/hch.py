@@ -69,8 +69,8 @@ class Ask(Command):
         self.budget = budget
 
     def execute(self, env, budget):
-        default_budget = env_budget / 10
-        max_budget = env_budget - 1
+        default_budget = budget / 10
+        max_budget = budget - 1
         sub_budget = min(max_budget, self.budget if self.budget is not None else default_budget)
         message = addressed_message(env, self.message.instantiate(env.args))
         if self.recipient_channel is None:
